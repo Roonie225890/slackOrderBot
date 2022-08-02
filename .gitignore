@@ -1,0 +1,4 @@
+.DS_Store
+docker_db/data
+docker_db/log
+docker_db/my.cnf

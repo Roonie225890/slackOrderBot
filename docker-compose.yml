@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  db:
+    container_name: db
+    build:
+      context: .
+      dockerfile: ./docker_db/db.Dockerfile
+    networks:
+      - backend
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: Asia/Taipei
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: "order"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker_db/my.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./docker_db/data/mysql:/var/lib/mysql
+      - ./docker_db/log/mysql:/var/log/mysql
+    command: --default-authentication-plugin=mysql_native_password
+  bot_server:
+    container_name: bot_server
+    build:
+      context: .
+      dockerfile: bot_server.Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    volumes:
+    - .:/app/
+networks:
+  backend:
+    driver: bridge
+volumes:
+  mysql_data:
